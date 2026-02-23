@@ -2,44 +2,64 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Certificado</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Certificado Ruddy</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
     <style>
+        /* Configuración de toda la pantalla */
         html, body {
             margin: 0;
             padding: 0;
-            background-color: #ffffff;
+            background-color: #e0e0e0; /* Fondo gris claro para resaltar el documento */
             width: 100%;
-            height: 100%;
+            height: 100vh; /* Ocupa el 100% de la altura visible del celular */
             display: flex;
-            justify-content: center; /* Centra el documento */
+            justify-content: center; /* Centrado horizontal */
+            align-items: center; /* Centrado vertical */
+            overflow: hidden; /* Evita barras de desplazamiento */
         }
-        /* Ajustamos el visor al tamaño de la pantalla del celular */
+
+        /* Contenedor flexible para el documento */
+        .document-container {
+            width: 95%;  /* Ocupa el 95% del ancho disponible */
+            height: 95%; /* Ocupa el 95% de la altura disponible */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* El documento en sí (el canvas donde se dibuja el PDF) */
         canvas {
-            width: 100%;
-            max-width: 800px;
-            height: auto;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            /* Estas líneas son la clave para que se ajuste al tamaño */
+            max-width: 100%;
+            max-height: 100%;
+            width: auto;  /* Mantiene la proporción correcta */
+            height: auto; /* Mantiene la proporción correcta */
+            
+            /* Estética */
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3); /* Sombra para que "flote" */
+            border-radius: 5px; /* Bordes ligeramente redondeados */
+            background-color: white;
         }
     </style>
 </head>
 <body>
 
-    <canvas id="visor-pdf"></canvas>
+    <div class="document-container">
+        <canvas id="visor-pdf"></canvas>
+    </div>
 
     <script>
-        // EL NOMBRE DE TU ARCHIVO ACTUALIZADO
+        // Asegúrate de que este nombre sea EXACTO al de tu archivo
         const url = 'ruddyc.pdf';
 
-        // Configuración necesaria para que la herramienta funcione
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
 
-        // Ordenamos que se lea y se dibuje el PDF
         pdfjsLib.getDocument(url).promise.then(pdf => {
-            // Carga la primera página del PDF (ideal para el certificado)
             pdf.getPage(1).then(page => {
-                const scale = 2.0; // Lo cargamos en alta calidad
+                // Usamos una escala alta (2.0) para que se vea nítido, 
+                // el CSS se encargará de reducirlo al tamaño de la pantalla.
+                const scale = 2.0; 
                 const viewport = page.getViewport({ scale: scale });
                 
                 const canvas = document.getElementById('visor-pdf');
@@ -56,6 +76,7 @@
             });
         }).catch(error => {
             console.error("Error al cargar el PDF: ", error);
+            alert("Hubo un problema cargando el documento. Verifica el nombre del archivo.");
         });
     </script>
 
