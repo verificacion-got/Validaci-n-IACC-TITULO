@@ -3,29 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Documento ruddy.pdf</title>
+    <title>Certificado</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
     <style>
-        /* CSS para que ocupe el 100% de la pantalla sin márgenes */
         html, body {
-            height: 100%;
-            width: 100%;
             margin: 0;
             padding: 0;
-            overflow: hidden; /* Evita doble barra de desplazamiento */
-            background-color: #525659; /* Color de fondo típico de visores PDF */
-        }
-        /* Configuración del elemento que incrusta el PDF */
-        embed {
-            display: block;
+            background-color: #ffffff;
             width: 100%;
             height: 100%;
-            border: none;
+            display: flex;
+            justify-content: center; /* Centra el documento */
+        }
+        /* Ajustamos el visor al tamaño de la pantalla del celular */
+        canvas {
+            width: 100%;
+            max-width: 800px;
+            height: auto;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
         }
     </style>
 </head>
 <body>
 
-    <embed src="ruddy.pdf" type="application/pdf">
+    <canvas id="visor-pdf"></canvas>
+
+    <script>
+        // EL NOMBRE DE TU ARCHIVO ACTUALIZADO
+        const url = 'ruddyc.pdf';
+
+        // Configuración necesaria para que la herramienta funcione
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+
+        // Ordenamos que se lea y se dibuje el PDF
+        pdfjsLib.getDocument(url).promise.then(pdf => {
+            // Carga la primera página del PDF (ideal para el certificado)
+            pdf.getPage(1).then(page => {
+                const scale = 2.0; // Lo cargamos en alta calidad
+                const viewport = page.getViewport({ scale: scale });
+                
+                const canvas = document.getElementById('visor-pdf');
+                const ctx = canvas.getContext('2d');
+                
+                canvas.height = viewport.height;
+                canvas.width = viewport.width;
+
+                const renderContext = {
+                    canvasContext: ctx,
+                    viewport: viewport
+                };
+                page.render(renderContext);
+            });
+        }).catch(error => {
+            console.error("Error al cargar el PDF: ", error);
+        });
+    </script>
 
 </body>
 </html>
